@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm view *)",
+      "Bash(npm audit *)",
+      "Bash(npm run *)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git -c user.name=Elora -c user.email=digitalwithelora@gmail.com commit -q -m 'Initial commit: Next.js 14 productivity dashboard with Neon Postgres *)"
+    ]
+  }
+}
