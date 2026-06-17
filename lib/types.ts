@@ -31,6 +31,8 @@ export interface QuickLink {
  * stores whatever shape it is given, so new widgets need no schema migration.
  */
 export interface DashboardData {
+  /** Display name used in the "Hey [name] ✦" greeting. */
+  name: string;
   tasks: Task[];
   notes: Note[];
   habits: Habit[];
@@ -38,6 +40,7 @@ export interface DashboardData {
 }
 
 export const emptyDashboard: DashboardData = {
+  name: "",
   tasks: [],
   notes: [],
   habits: [],
@@ -48,6 +51,7 @@ export const emptyDashboard: DashboardData = {
 export function normalizeDashboard(data: unknown): DashboardData {
   const d = (data ?? {}) as Partial<DashboardData>;
   return {
+    name: typeof d.name === "string" ? d.name : "",
     tasks: Array.isArray(d.tasks) ? d.tasks : [],
     notes: Array.isArray(d.notes) ? d.notes : [],
     habits: Array.isArray(d.habits) ? d.habits : [],

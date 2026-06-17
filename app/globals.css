@@ -3,13 +3,52 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
+  --cream: #f6efdf;
+  --sand: #efe5d0;
+  --ink: #785b4e;
+  --ink-soft: #866a5b;
+  --terracotta: #d68d84;
+  --sage: #9fae8b;
 }
 
 html,
 body {
-  background: #0f1115;
-  color: #e6e8eb;
+  background-color: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Soft warm wash + a subtle grain so the cream isn't flat. */
+body {
+  background-image:
+    radial-gradient(
+      1200px 600px at 80% -10%,
+      rgba(214, 141, 132, 0.1),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at -5% 110%,
+      rgba(159, 174, 139, 0.12),
+      transparent 55%
+    );
+  background-attachment: fixed;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
 }
 
 * {
@@ -21,9 +60,13 @@ body {
   height: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2a2e37;
+  background: rgba(120, 91, 78, 0.25);
   border-radius: 8px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
+}
+
+::selection {
+  background: rgba(214, 141, 132, 0.3);
 }

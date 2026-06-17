@@ -36,9 +36,7 @@ export default function TasksWidget({
   return (
     <Card
       title="Tasks"
-      action={
-        <span className="text-xs text-gray-500">{remaining} left</span>
-      }
+      action={<span className="text-xs text-ink-faint">{remaining} left</span>}
     >
       <div className="mb-3 flex gap-2">
         <input
@@ -46,11 +44,11 @@ export default function TasksWidget({
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && add()}
           placeholder="Add a task…"
-          className="flex-1 rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm outline-none placeholder:text-gray-500 focus:border-gray-500"
+          className="flex-1 rounded-lg border border-line bg-cream/50 px-3 py-2 text-sm text-ink outline-none transition placeholder:text-ink-faint/70 focus:border-terracotta focus:bg-white/70"
         />
         <button
           onClick={add}
-          className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
+          className="rounded-lg bg-terracotta px-4 py-2 text-sm font-medium text-white shadow-soft transition hover:bg-terracotta-deep"
         >
           Add
         </button>
@@ -58,31 +56,38 @@ export default function TasksWidget({
 
       <ul className="space-y-1">
         {tasks.length === 0 && (
-          <li className="py-6 text-center text-sm text-gray-500">
-            No tasks yet — add one above.
+          <li className="py-6 text-center text-sm text-ink-faint">
+            No tasks yet — add one above. ✦
           </li>
         )}
         {tasks.map((task) => (
           <li
             key={task.id}
-            className="group flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-surface-2"
+            className="group flex items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-cream/60"
           >
-            <input
-              type="checkbox"
-              checked={task.done}
-              onChange={() => toggle(task.id)}
-              className="h-4 w-4 shrink-0 accent-emerald-500"
-            />
+            <button
+              onClick={() => toggle(task.id)}
+              role="checkbox"
+              aria-checked={task.done}
+              aria-label={task.done ? "Mark incomplete" : "Mark complete"}
+              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-xs text-white transition ${
+                task.done
+                  ? "border-terracotta bg-terracotta"
+                  : "border-ink-faint/50 bg-transparent hover:border-terracotta"
+              }`}
+            >
+              {task.done ? "✓" : ""}
+            </button>
             <span
-              className={`flex-1 text-sm ${
-                task.done ? "text-gray-500 line-through" : "text-gray-100"
+              className={`flex-1 text-sm transition-colors ${
+                task.done ? "text-ink-faint line-through" : "text-ink"
               }`}
             >
               {task.text}
             </span>
             <button
               onClick={() => remove(task.id)}
-              className="text-gray-600 opacity-0 transition hover:text-red-400 group-hover:opacity-100"
+              className="text-ink-faint/60 opacity-0 transition hover:text-terracotta-deep group-hover:opacity-100"
               aria-label="Delete task"
             >
               ✕

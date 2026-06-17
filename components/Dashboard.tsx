@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DashboardData } from "@/lib/types";
 import { useAutoSave } from "@/lib/useAutoSave";
 import SaveStatus from "@/components/SaveStatus";
@@ -13,7 +13,19 @@ export default function Dashboard({ initial }: { initial: DashboardData }) {
   const [data, setData] = useState<DashboardData>(initial);
   const saveState = useAutoSave(data);
 
-  // Update a single top-level slice while leaving the rest untouched.
+  // Render the date only after mount to avoid a server/client hydration gap.
+  const [today, setToday] = useState("");
+  useEffect(() => {
+    setToday(
+      new Date().toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      }),
+    );
+  }, []);
+
   function update<K extends keyof DashboardData>(
     key: K,
     value: DashboardData[K],
@@ -22,14 +34,23 @@ export default function Dashboard({ initial }: { initial: DashboardData }) {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-      <header className="mb-8 flex items-center justify-between">
+    <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+      <header className="mb-9 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Productivity Dashboard
+          <h1 className="flex items-baseline font-serif text-3xl font-semibold tracking-tight text-ink">
+            Hey&nbsp;
+            <input
+              value={data.name}
+              onChange={(e) => update("name", e.target.value)}
+              placeholder="there"
+              size={Math.max((data.name || "there").length, 4)}
+              aria-label="Your name"
+              className="border-b border-transparent bg-transparent font-serif text-3xl font-semibold tracking-tight text-ink outline-none transition-colors placeholder:text-ink-faint/70 hover:border-line focus:border-terracotta"
+            />
+            <span className="ml-1 text-terracotta">✦</span>
           </h1>
-          <p className="text-sm text-gray-400">
-            Everything saves automatically as you type.
+          <p className="mt-1 text-sm text-ink-soft">
+            {today || " "}
           </p>
         </div>
         <SaveStatus state={saveState} />
@@ -53,6 +74,10 @@ export default function Dashboard({ initial }: { initial: DashboardData }) {
           onChange={(links) => update("links", links)}
         />
       </div>
+
+      <footer className="mt-10 text-center text-xs tracking-wide text-ink-faint">
+        Built for you ✦ 2026
+      </footer>
     </main>
   );
 }

@@ -35,7 +35,7 @@ export default function NotesWidget({
       action={
         <button
           onClick={add}
-          className="rounded-lg bg-surface-2 px-2.5 py-1 text-xs font-medium text-gray-200 transition hover:bg-border"
+          className="rounded-lg border border-line bg-cream/50 px-2.5 py-1 text-xs font-medium text-ink-soft transition hover:border-terracotta hover:text-terracotta-deep"
         >
           + New note
         </button>
@@ -43,25 +43,25 @@ export default function NotesWidget({
     >
       <div className="space-y-3">
         {notes.length === 0 && (
-          <p className="py-6 text-center text-sm text-gray-500">
-            No notes yet — create one to start jotting.
+          <p className="py-6 text-center text-sm text-ink-faint">
+            No notes yet — create one to start jotting. ✦
           </p>
         )}
         {notes.map((note) => (
           <div
             key={note.id}
-            className="group rounded-lg border border-border bg-surface-2 p-3"
+            className="group rounded-xl border border-line bg-cream/40 p-3 transition-colors hover:bg-cream/60"
           >
             <div className="mb-1 flex items-center gap-2">
               <input
                 value={note.title}
                 onChange={(e) => patch(note.id, { title: e.target.value })}
                 placeholder="Untitled"
-                className="flex-1 bg-transparent text-sm font-medium outline-none placeholder:text-gray-500"
+                className="flex-1 bg-transparent font-serif text-sm font-medium text-ink outline-none placeholder:text-ink-faint/70"
               />
               <button
                 onClick={() => remove(note.id)}
-                className="text-gray-600 opacity-0 transition hover:text-red-400 group-hover:opacity-100"
+                className="text-ink-faint/60 opacity-0 transition hover:text-terracotta-deep group-hover:opacity-100"
                 aria-label="Delete note"
               >
                 ✕
@@ -72,7 +72,7 @@ export default function NotesWidget({
               onChange={(e) => patch(note.id, { body: e.target.value })}
               placeholder="Write something…"
               rows={3}
-              className="w-full resize-y bg-transparent text-sm text-gray-300 outline-none placeholder:text-gray-600"
+              className="w-full resize-y bg-transparent text-sm text-ink-soft outline-none placeholder:text-ink-faint/60"
             />
           </div>
         ))}

@@ -67,25 +67,25 @@ export default function HabitsWidget({
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && add()}
           placeholder="Add a habit…"
-          className="flex-1 rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm outline-none placeholder:text-gray-500 focus:border-gray-500"
+          className="flex-1 rounded-lg border border-line bg-cream/50 px-3 py-2 text-sm text-ink outline-none transition placeholder:text-ink-faint/70 focus:border-terracotta focus:bg-white/70"
         />
         <button
           onClick={add}
-          className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
+          className="rounded-lg bg-terracotta px-4 py-2 text-sm font-medium text-white shadow-soft transition hover:bg-terracotta-deep"
         >
           Add
         </button>
       </div>
 
       {habits.length === 0 && (
-        <p className="py-6 text-center text-sm text-gray-500">
-          No habits yet — track your first one above.
+        <p className="py-6 text-center text-sm text-ink-faint">
+          No habits yet — track your first one above. ✦
         </p>
       )}
 
       {habits.length > 0 && (
         <div className="space-y-2">
-          <div className="grid grid-cols-[1fr_repeat(7,1.5rem)] items-center gap-1 pl-1 text-center text-[10px] text-gray-500">
+          <div className="grid grid-cols-[1fr_repeat(7,1.6rem)] items-center gap-1 pl-1 text-center text-[10px] uppercase tracking-wide text-ink-faint">
             <span />
             {DAYS.map((d) => (
               <span key={d}>{WEEKDAY(d)}</span>
@@ -94,20 +94,20 @@ export default function HabitsWidget({
           {habits.map((habit) => (
             <div
               key={habit.id}
-              className="group grid grid-cols-[1fr_repeat(7,1.5rem)] items-center gap-1"
+              className="group grid grid-cols-[1fr_repeat(7,1.6rem)] items-center gap-1 rounded-lg px-1 py-0.5 transition-colors hover:bg-cream/50"
             >
               <div className="flex min-w-0 items-center gap-1.5">
-                <span className="truncate text-sm text-gray-100" title={habit.name}>
+                <span className="truncate text-sm text-ink" title={habit.name}>
                   {habit.name}
                 </span>
                 {streak(habit.history) > 0 && (
-                  <span className="shrink-0 text-xs text-amber-400">
+                  <span className="shrink-0 text-xs text-terracotta-deep">
                     🔥{streak(habit.history)}
                   </span>
                 )}
                 <button
                   onClick={() => remove(habit.id)}
-                  className="shrink-0 text-gray-600 opacity-0 transition hover:text-red-400 group-hover:opacity-100"
+                  className="shrink-0 text-ink-faint/60 opacity-0 transition hover:text-terracotta-deep group-hover:opacity-100"
                   aria-label="Delete habit"
                 >
                   ✕
@@ -119,10 +119,10 @@ export default function HabitsWidget({
                   <button
                     key={day}
                     onClick={() => toggle(habit.id, day)}
-                    className={`mx-auto h-6 w-6 rounded-md border text-xs transition ${
+                    className={`mx-auto flex h-6 w-6 items-center justify-center rounded-md border text-xs transition ${
                       on
-                        ? "border-emerald-500 bg-emerald-500/80 text-white"
-                        : "border-border bg-surface-2 hover:border-gray-500"
+                        ? "border-terracotta bg-terracotta text-white shadow-soft"
+                        : "border-line bg-cream/40 text-transparent hover:border-terracotta hover:bg-white/60"
                     }`}
                     aria-label={`${habit.name} on ${day}`}
                   >

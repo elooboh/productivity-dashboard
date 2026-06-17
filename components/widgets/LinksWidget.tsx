@@ -48,6 +48,9 @@ export default function LinksWidget({
     onChange(links.filter((l) => l.id !== id));
   }
 
+  const inputClass =
+    "rounded-lg border border-line bg-cream/50 px-3 py-2 text-sm text-ink outline-none transition placeholder:text-ink-faint/70 focus:border-terracotta focus:bg-white/70";
+
   return (
     <Card title="Quick Links">
       <div className="mb-3 flex flex-col gap-2 sm:flex-row">
@@ -55,33 +58,33 @@ export default function LinksWidget({
           value={label}
           onChange={(e) => setLabel(e.target.value)}
           placeholder="Label (optional)"
-          className="rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm outline-none placeholder:text-gray-500 focus:border-gray-500 sm:w-1/3"
+          className={`${inputClass} sm:w-1/3`}
         />
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && add()}
           placeholder="example.com"
-          className="flex-1 rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm outline-none placeholder:text-gray-500 focus:border-gray-500"
+          className={`${inputClass} flex-1`}
         />
         <button
           onClick={add}
-          className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
+          className="rounded-lg bg-terracotta px-4 py-2 text-sm font-medium text-white shadow-soft transition hover:bg-terracotta-deep"
         >
           Add
         </button>
       </div>
 
       {links.length === 0 ? (
-        <p className="py-6 text-center text-sm text-gray-500">
-          No links yet — save your go-to sites.
+        <p className="py-6 text-center text-sm text-ink-faint">
+          No links yet — save your go-to sites. ✦
         </p>
       ) : (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {links.map((link) => (
             <div
               key={link.id}
-              className="group relative flex items-center rounded-lg border border-border bg-surface-2 p-3 transition hover:border-gray-500"
+              className="group relative flex items-center rounded-xl border border-line bg-cream/40 p-3 transition hover:-translate-y-0.5 hover:border-terracotta hover:bg-white/60 hover:shadow-soft"
             >
               <a
                 href={link.url}
@@ -89,16 +92,16 @@ export default function LinksWidget({
                 rel="noopener noreferrer"
                 className="min-w-0 flex-1"
               >
-                <span className="block truncate text-sm font-medium text-gray-100">
+                <span className="block truncate text-sm font-medium text-ink">
                   {link.label}
                 </span>
-                <span className="block truncate text-xs text-gray-500">
+                <span className="block truncate text-xs text-ink-faint">
                   {hostname(link.url)}
                 </span>
               </a>
               <button
                 onClick={() => remove(link.id)}
-                className="absolute right-1.5 top-1.5 text-gray-600 opacity-0 transition hover:text-red-400 group-hover:opacity-100"
+                className="absolute right-1.5 top-1.5 text-ink-faint/60 opacity-0 transition hover:text-terracotta-deep group-hover:opacity-100"
                 aria-label="Delete link"
               >
                 ✕
