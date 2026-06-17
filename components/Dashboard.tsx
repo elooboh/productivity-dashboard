@@ -3,11 +3,15 @@
 import { useEffect, useState } from "react";
 import { DashboardData } from "@/lib/types";
 import { useAutoSave } from "@/lib/useAutoSave";
+import { DEFAULT_TAB, isTabId, TabId } from "@/lib/tabs";
 import SaveStatus from "@/components/SaveStatus";
-import TasksWidget from "@/components/widgets/TasksWidget";
-import NotesWidget from "@/components/widgets/NotesWidget";
-import HabitsWidget from "@/components/widgets/HabitsWidget";
-import LinksWidget from "@/components/widgets/LinksWidget";
+import TabNav from "@/components/TabNav";
+import WeekTab from "@/components/tabs/WeekTab";
+import MonthTab from "@/components/tabs/MonthTab";
+import QuarterTab from "@/components/tabs/QuarterTab";
+import HabitsTab from "@/components/tabs/HabitsTab";
+import YearTab from "@/components/tabs/YearTab";
+import BucketListTab from "@/components/tabs/BucketListTab";
 
 export default function Dashboard({ initial }: { initial: DashboardData }) {
   const [data, setData] = useState<DashboardData>(initial);
@@ -26,6 +30,26 @@ export default function Dashboard({ initial }: { initial: DashboardData }) {
     );
   }, []);
 
+  // Active tab lives in the URL hash so it's bookmarkable and survives reload.
+  // Starts at the default on the server, then syncs to the hash after mount.
+  const [tab, setTab] = useState<TabId>(DEFAULT_TAB);
+  useEffect(() => {
+    const sync = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (isTabId(hash)) setTab(hash);
+    };
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
+
+  function selectTab(id: TabId) {
+    setTab(id);
+    if (window.location.hash !== `#${id}`) {
+      window.history.replaceState(null, "", `#${id}`);
+    }
+  }
+
   function update<K extends keyof DashboardData>(
     key: K,
     value: DashboardData[K],
@@ -33,9 +57,11 @@ export default function Dashboard({ initial }: { initial: DashboardData }) {
     setData((d) => ({ ...d, [key]: value }));
   }
 
+  const tabProps = { data, update };
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <header className="mb-9 flex flex-wrap items-end justify-between gap-4">
+      <header className="mb-9 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="flex items-baseline font-serif text-3xl font-semibold tracking-tight text-ink">
             Hey&nbsp;
@@ -49,30 +75,21 @@ export default function Dashboard({ initial }: { initial: DashboardData }) {
             />
             <span className="ml-1 text-terracotta">✦</span>
           </h1>
-          <p className="mt-1 text-sm text-ink-soft">
-            {today || " "}
-          </p>
+          <div className="mt-1.5 flex flex-wrap items-center gap-3">
+            <p className="text-sm text-ink-soft">{today || " "}</p>
+            <SaveStatus state={saveState} />
+          </div>
         </div>
-        <SaveStatus state={saveState} />
+        <TabNav active={tab} onChange={selectTab} />
       </header>
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <TasksWidget
-          tasks={data.tasks}
-          onChange={(tasks) => update("tasks", tasks)}
-        />
-        <HabitsWidget
-          habits={data.habits}
-          onChange={(habits) => update("habits", habits)}
-        />
-        <NotesWidget
-          notes={data.notes}
-          onChange={(notes) => update("notes", notes)}
-        />
-        <LinksWidget
-          links={data.links}
-          onChange={(links) => update("links", links)}
-        />
+      <div key={tab}>
+        {tab === "week" && <WeekTab {...tabProps} />}
+        {tab === "month" && <MonthTab />}
+        {tab === "quarter" && <QuarterTab />}
+        {tab === "habits" && <HabitsTab {...tabProps} />}
+        {tab === "year" && <YearTab />}
+        {tab === "bucket" && <BucketListTab />}
       </div>
 
       <footer className="mt-10 text-center text-xs tracking-wide text-ink-faint">

@@ -21,7 +21,8 @@
       "Bash(gh auth *)",
       "Bash(git ls-remote *)",
       "mcp__Claude_Preview__preview_start",
-      "Bash(git -c user.name=Elora -c user.email=digitalwithelora@gmail.com commit -q -m 'Redesign: warm earth-tone theme *)"
+      "Bash(git -c user.name=Elora -c user.email=digitalwithelora@gmail.com commit -q -m 'Redesign: warm earth-tone theme *)",
+      "Bash(git -c user.name=Elora -c user.email=digitalwithelora@gmail.com commit -q -m 'Add six-tab navigation shell *)"
     ]
   }
 }
