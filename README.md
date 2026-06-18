@@ -78,6 +78,20 @@ https://YOUR-APP.vercel.app/api/google/callback
 See the in-app conversation / commit notes for the full step-by-step Google
 Cloud Console walkthrough.
 
+## Passcode gate (optional login)
+
+Set `DASHBOARD_PASSCODE` to require a passcode before anyone can view or edit
+the dashboard or reach any API route. Implemented in `middleware.ts`:
+
+- The cookie stores a SHA-256 hash of the passcode (never the raw value);
+  every request recomputes and compares.
+- Unauthenticated page loads redirect to `/login`; API calls return `401`.
+- Entered once, remembered for 30 days. A 🔒 Lock button in the header logs out.
+- **If `DASHBOARD_PASSCODE` is unset, the gate is disabled** (open dashboard).
+
+Strongly recommended before connecting a real Google Calendar, since the app
+otherwise has no login.
+
 ## Project structure
 
 ```

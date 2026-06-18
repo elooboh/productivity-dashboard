@@ -14,7 +14,13 @@ import HabitsTab from "@/components/tabs/HabitsTab";
 import YearTab from "@/components/tabs/YearTab";
 import BucketListTab from "@/components/tabs/BucketListTab";
 
-export default function Dashboard({ initial }: { initial: DashboardData }) {
+export default function Dashboard({
+  initial,
+  locked = false,
+}: {
+  initial: DashboardData;
+  locked?: boolean;
+}) {
   const [data, setData] = useState<DashboardData>(initial);
   const saveState = useAutoSave(data);
 
@@ -100,6 +106,17 @@ export default function Dashboard({ initial }: { initial: DashboardData }) {
           <div className="mt-1.5 flex flex-wrap items-center gap-3">
             <p className="text-sm text-ink-soft">{today || " "}</p>
             <SaveStatus state={saveState} />
+            {locked && (
+              <button
+                onClick={async () => {
+                  await fetch("/api/logout", { method: "POST" });
+                  window.location.href = "/login";
+                }}
+                className="rounded-full border border-line bg-white/55 px-3 py-1.5 text-xs text-ink-soft shadow-soft backdrop-blur-md transition hover:border-terracotta hover:text-terracotta-deep"
+              >
+                🔒 Lock
+              </button>
+            )}
           </div>
         </div>
         <TabNav active={tab} onChange={selectTab} />

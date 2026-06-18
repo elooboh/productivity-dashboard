@@ -27,7 +27,8 @@
       "Bash(rm -f components/widgets/TasksWidget.tsx components/widgets/NotesWidget.tsx components/widgets/LinksWidget.tsx components/widgets/HabitsWidget.tsx components/EmptyTab.tsx)",
       "Bash(rmdir components/widgets)",
       "Bash(git -c user.name=Elora -c user.email=digitalwithelora@gmail.com commit -q -m 'Restore Notes and Quick Links on the Week tab *)",
-      "Bash(git -c user.name=Elora -c user.email=digitalwithelora@gmail.com commit -q -m 'Add Google Calendar integration *)"
+      "Bash(git -c user.name=Elora -c user.email=digitalwithelora@gmail.com commit -q -m 'Add Google Calendar integration *)",
+      "Bash(git -c user.name=Elora -c user.email=digitalwithelora@gmail.com commit -q -m 'Add optional passcode gate *)"
     ]
   }
 }
