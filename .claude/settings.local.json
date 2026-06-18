@@ -22,7 +22,10 @@
       "Bash(git ls-remote *)",
       "mcp__Claude_Preview__preview_start",
       "Bash(git -c user.name=Elora -c user.email=digitalwithelora@gmail.com commit -q -m 'Redesign: warm earth-tone theme *)",
-      "Bash(git -c user.name=Elora -c user.email=digitalwithelora@gmail.com commit -q -m 'Add six-tab navigation shell *)"
+      "Bash(git -c user.name=Elora -c user.email=digitalwithelora@gmail.com commit -q -m 'Add six-tab navigation shell *)",
+      "Bash(grep -rEl \"widgets/\\(Tasks|Notes|Links|Habits\\)Widget|components/EmptyTab\" components app lib)",
+      "Bash(rm -f components/widgets/TasksWidget.tsx components/widgets/NotesWidget.tsx components/widgets/LinksWidget.tsx components/widgets/HabitsWidget.tsx components/EmptyTab.tsx)",
+      "Bash(rmdir components/widgets)"
     ]
   }
 }

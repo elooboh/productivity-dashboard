@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { DashboardData } from "@/lib/types";
+import { useEffect, useRef, useState } from "react";
+import { DashboardData, getWeek } from "@/lib/types";
+import { weekKey } from "@/lib/date";
 import { useAutoSave } from "@/lib/useAutoSave";
 import { DEFAULT_TAB, isTabId, TabId } from "@/lib/tabs";
 import SaveStatus from "@/components/SaveStatus";
@@ -57,6 +58,27 @@ export default function Dashboard({ initial }: { initial: DashboardData }) {
     setData((d) => ({ ...d, [key]: value }));
   }
 
+  // One-time migration: fold pre-existing top-level tasks into the current
+  // week's task list, then clear the legacy field so it never runs again.
+  const migrated = useRef(false);
+  useEffect(() => {
+    if (migrated.current) return;
+    migrated.current = true;
+    setData((d) => {
+      if (d.tasks.length === 0) return d;
+      const wk = weekKey(new Date());
+      const week = getWeek(d, wk);
+      return {
+        ...d,
+        tasks: [],
+        weeks: {
+          ...d.weeks,
+          [wk]: { ...week, tasks: [...d.tasks, ...week.tasks] },
+        },
+      };
+    });
+  }, []);
+
   const tabProps = { data, update };
 
   return (
@@ -85,11 +107,11 @@ export default function Dashboard({ initial }: { initial: DashboardData }) {
 
       <div key={tab}>
         {tab === "week" && <WeekTab {...tabProps} />}
-        {tab === "month" && <MonthTab />}
-        {tab === "quarter" && <QuarterTab />}
+        {tab === "month" && <MonthTab {...tabProps} />}
+        {tab === "quarter" && <QuarterTab {...tabProps} />}
         {tab === "habits" && <HabitsTab {...tabProps} />}
-        {tab === "year" && <YearTab />}
-        {tab === "bucket" && <BucketListTab />}
+        {tab === "year" && <YearTab {...tabProps} />}
+        {tab === "bucket" && <BucketListTab {...tabProps} />}
       </div>
 
       <footer className="mt-10 text-center text-xs tracking-wide text-ink-faint">
