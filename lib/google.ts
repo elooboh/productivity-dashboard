@@ -53,8 +53,25 @@ export function getBaseUrl(req: NextRequest): string {
   return `${proto}://${host}`;
 }
 
+/**
+ * Stable public base URL for OAuth. The redirect URI MUST be identical across
+ * deploys (or Google throws redirect_uri_mismatch), so we never use the
+ * per-deployment host here. Priority:
+ *   1. OAUTH_BASE_URL — explicit override (set this for a custom domain)
+ *   2. VERCEL_PROJECT_PRODUCTION_URL — Vercel's stable production domain,
+ *      unchanged between deployments (unlike VERCEL_URL)
+ *   3. the request origin — local dev fallback (localhost)
+ */
+export function publicBaseUrl(req: NextRequest): string {
+  const override = process.env.OAUTH_BASE_URL;
+  if (override) return override.replace(/\/+$/, "");
+  const prod = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  if (prod) return `https://${prod}`;
+  return getBaseUrl(req);
+}
+
 export function redirectUriFor(req: NextRequest): string {
-  return `${getBaseUrl(req)}/api/google/callback`;
+  return `${publicBaseUrl(req)}/api/google/callback`;
 }
 
 export function buildAuthUrl(redirectUri: string, state: string): string {

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { exchangeCode, getBaseUrl, redirectUriFor, saveTokens } from "@/lib/google";
+import { exchangeCode, publicBaseUrl, redirectUriFor, saveTokens } from "@/lib/google";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const base = getBaseUrl(req);
+  const base = publicBaseUrl(req);
   const back = (status: string) =>
     NextResponse.redirect(`${base}/?gcal=${status}#week`);
 
