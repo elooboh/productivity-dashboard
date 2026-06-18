@@ -47,6 +47,37 @@ auto-saved as you type.
    `DATABASE_URL` manually under **Project Settings → Environment Variables**.
 4. Deploy. The table is created on the first request.
 
+## Google Calendar integration
+
+Connects your Google Calendar so this week's events appear in the Week tab's
+"Events This Week" card.
+
+- **Tokens are stored server-side only** in a `google_tokens` table and are
+  never included in the dashboard JSON sent to the browser.
+- Access tokens **auto-refresh** via the stored refresh token, so you stay
+  connected.
+- The OAuth **redirect URI is derived from the request origin**, so the same
+  build works locally and on Vercel — you just register both URLs in Google.
+
+⚠️ **Privacy:** this dashboard has no login. Once connected, anyone with the
+URL can view your events or disconnect. Add a passcode gate before exposing a
+real calendar publicly.
+
+### Environment variables
+```
+GOOGLE_CLIENT_ID="...apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="..."
+```
+
+### Redirect URIs to register (must match EXACTLY)
+```
+http://localhost:3000/api/google/callback
+https://YOUR-APP.vercel.app/api/google/callback
+```
+
+See the in-app conversation / commit notes for the full step-by-step Google
+Cloud Console walkthrough.
+
 ## Project structure
 
 ```

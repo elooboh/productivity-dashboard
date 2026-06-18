@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 import { TabProps } from "@/lib/tabs";
-import {
-  SimpleItem,
-  Task,
-  WeekData,
-  WeekEvent,
-  getWeek,
-} from "@/lib/types";
+import { SimpleItem, Task, WeekData, getWeek } from "@/lib/types";
 import {
   WEEKDAY_LETTERS,
   addWeeksToKey,
@@ -22,6 +16,7 @@ import Card from "@/components/Card";
 import ProgressBar from "@/components/ui/ProgressBar";
 import PeriodNav from "@/components/ui/PeriodNav";
 import CurrentlyReading from "@/components/CurrentlyReading";
+import EventsCard from "@/components/EventsCard";
 import NotesWidget from "@/components/widgets/NotesWidget";
 import LinksWidget from "@/components/widgets/LinksWidget";
 
@@ -59,7 +54,7 @@ export default function WeekTab({ data, update }: TabProps) {
         <GymThisWeek dates={dates} gymDays={data.gymDays} onToggle={toggleGym} />
         <WeekTasks week={week} patch={patch} />
         <CurrentlyReading data={data} update={update} />
-        <WeekEvents week={week} patch={patch} dates={dates} />
+        <EventsCard week={week} patch={patch} dates={dates} />
         <NotesWidget
           notes={data.notes}
           onChange={(notes) => update("notes", notes)}
@@ -298,93 +293,6 @@ function WeekTasks({
         onRemove={remove}
         emptyText="No tasks yet — add one above. ✦"
       />
-    </Card>
-  );
-}
-
-// ---- Events this week ----
-function WeekEvents({
-  week,
-  patch,
-  dates,
-}: {
-  week: WeekData;
-  patch: (p: Partial<WeekData>) => void;
-  dates: string[];
-}) {
-  const [title, setTitle] = useState("");
-  const [date, setDate] = useState(dates[0]);
-  function add() {
-    const t = title.trim();
-    if (!t) return;
-    const ev: WeekEvent = { id: crypto.randomUUID(), title: t, date };
-    patch({ events: [...week.events, ev] });
-    setTitle("");
-  }
-  function remove(id: string) {
-    patch({ events: week.events.filter((e) => e.id !== id) });
-  }
-  const sorted = [...week.events].sort((a, b) => a.date.localeCompare(b.date));
-
-  return (
-    <Card title="Events This Week">
-      <div className="mb-3 flex flex-col gap-2 sm:flex-row">
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && add()}
-          placeholder="Event…"
-          className="flex-1 rounded-lg border border-line bg-cream/50 px-3 py-2 text-sm text-ink outline-none focus:border-terracotta"
-        />
-        <select
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="rounded-lg border border-line bg-cream/50 px-2 py-2 text-sm text-ink-soft outline-none focus:border-terracotta"
-        >
-          {dates.map((d) => (
-            <option key={d} value={d}>
-              {fromISO(d).toLocaleDateString("en-US", {
-                weekday: "short",
-                day: "numeric",
-              })}
-            </option>
-          ))}
-        </select>
-        <button
-          onClick={add}
-          className="rounded-lg bg-terracotta px-4 py-2 text-sm font-medium text-white shadow-soft transition hover:bg-terracotta-deep"
-        >
-          Add
-        </button>
-      </div>
-      {sorted.length === 0 ? (
-        <p className="py-4 text-center text-sm text-ink-faint">
-          Nothing scheduled this week. ✦
-        </p>
-      ) : (
-        <ul className="space-y-1">
-          {sorted.map((e) => (
-            <li
-              key={e.id}
-              className="group flex items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-cream/60"
-            >
-              <span className="w-12 shrink-0 text-xs font-medium text-terracotta-deep">
-                {fromISO(e.date).toLocaleDateString("en-US", {
-                  weekday: "short",
-                })}
-              </span>
-              <span className="flex-1 text-sm text-ink">{e.title}</span>
-              <button
-                onClick={() => remove(e.id)}
-                className="text-ink-faint/60 opacity-0 transition hover:text-terracotta-deep group-hover:opacity-100"
-                aria-label="Delete event"
-              >
-                ✕
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
     </Card>
   );
 }

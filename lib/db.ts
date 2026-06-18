@@ -1,22 +1,5 @@
-import { neon, NeonQueryFunction } from "@neondatabase/serverless";
 import { DashboardData, normalizeDashboard } from "./types";
-
-// Created lazily on first query so that merely importing this module (e.g.
-// during `next build` page-data collection) does not require DATABASE_URL.
-let _sql: NeonQueryFunction<false, false> | null = null;
-
-function getSql(): NeonQueryFunction<false, false> {
-  if (!_sql) {
-    const url = process.env.DATABASE_URL;
-    if (!url) {
-      throw new Error(
-        "DATABASE_URL is not set — set it in .env.local or your Vercel project.",
-      );
-    }
-    _sql = neon(url);
-  }
-  return _sql;
-}
+import { getSql } from "./sql";
 
 /**
  * With no auth this is a single global dashboard, so all data lives in one row.
