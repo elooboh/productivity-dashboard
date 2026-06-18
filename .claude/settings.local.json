@@ -28,7 +28,8 @@
       "Bash(rmdir components/widgets)",
       "Bash(git -c user.name=Elora -c user.email=digitalwithelora@gmail.com commit -q -m 'Restore Notes and Quick Links on the Week tab *)",
       "Bash(git -c user.name=Elora -c user.email=digitalwithelora@gmail.com commit -q -m 'Add Google Calendar integration *)",
-      "Bash(git -c user.name=Elora -c user.email=digitalwithelora@gmail.com commit -q -m 'Add optional passcode gate *)"
+      "Bash(git -c user.name=Elora -c user.email=digitalwithelora@gmail.com commit -q -m 'Add optional passcode gate *)",
+      "Bash(git -c user.name=Elora -c user.email=digitalwithelora@gmail.com commit -q -m 'Pin OAUTH_BASE_URL to production domain via .env.production *)"
     ]
   }
 }
