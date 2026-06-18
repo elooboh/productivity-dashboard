@@ -22,6 +22,8 @@ import Card from "@/components/Card";
 import ProgressBar from "@/components/ui/ProgressBar";
 import PeriodNav from "@/components/ui/PeriodNav";
 import CurrentlyReading from "@/components/CurrentlyReading";
+import NotesWidget from "@/components/widgets/NotesWidget";
+import LinksWidget from "@/components/widgets/LinksWidget";
 
 export default function WeekTab({ data, update }: TabProps) {
   const [key, setKey] = useState(() => weekKey(new Date()));
@@ -58,6 +60,16 @@ export default function WeekTab({ data, update }: TabProps) {
         <WeekTasks week={week} patch={patch} />
         <CurrentlyReading data={data} update={update} />
         <WeekEvents week={week} patch={patch} dates={dates} />
+        <NotesWidget
+          notes={data.notes}
+          onChange={(notes) => update("notes", notes)}
+        />
+        <div className="lg:col-span-2">
+          <LinksWidget
+            links={data.links}
+            onChange={(links) => update("links", links)}
+          />
+        </div>
         <Reflection week={week} patch={patch} />
       </div>
     </div>
