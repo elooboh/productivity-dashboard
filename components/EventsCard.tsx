@@ -11,6 +11,17 @@ interface GoogleEvent {
   start: string;
   end: string;
   allDay: boolean;
+  accountId: string;
+  accountEmail: string | null;
+  color: string;
+}
+
+interface ConnectedAccount {
+  id: string;
+  email: string | null;
+  color: string;
+  reauth?: boolean;
+  error?: boolean;
 }
 
 type GcalStatus =
@@ -30,7 +41,7 @@ export default function EventsCard({
   dates: string[];
 }) {
   const [status, setStatus] = useState<GcalStatus>("loading");
-  const [email, setEmail] = useState<string | null>(null);
+  const [accounts, setAccounts] = useState<ConnectedAccount[]>([]);
   const [gEvents, setGEvents] = useState<GoogleEvent[]>([]);
 
   const timeMin = new Date(dates[0] + "T00:00:00").toISOString();
@@ -50,12 +61,14 @@ export default function EventsCard({
         return;
       }
       if (!data.connected) {
+        setAccounts([]);
+        setGEvents([]);
         setStatus("disconnected");
         return;
       }
-      setEmail(data.email ?? null);
+      setAccounts(Array.isArray(data.accounts) ? data.accounts : []);
       setGEvents(Array.isArray(data.events) ? data.events : []);
-      setStatus(data.error ? "error" : "connected");
+      setStatus("connected");
     } catch {
       setStatus("error");
     }
@@ -71,11 +84,13 @@ export default function EventsCard({
     };
   }, [load]);
 
-  async function disconnect() {
-    await fetch("/api/google/disconnect", { method: "POST" });
-    setGEvents([]);
-    setEmail(null);
-    setStatus("disconnected");
+  async function disconnect(accountId: string) {
+    await fetch("/api/google/disconnect", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accountId }),
+    });
+    await load();
   }
 
   return (
@@ -96,7 +111,7 @@ export default function EventsCard({
       <div className="mb-4">
         <GoogleSection
           status={status}
-          email={email}
+          accounts={accounts}
           events={gEvents}
           onDisconnect={disconnect}
           onRetry={load}
@@ -111,15 +126,15 @@ export default function EventsCard({
 
 function GoogleSection({
   status,
-  email,
+  accounts,
   events,
   onDisconnect,
   onRetry,
 }: {
   status: GcalStatus;
-  email: string | null;
+  accounts: ConnectedAccount[];
   events: GoogleEvent[];
-  onDisconnect: () => void;
+  onDisconnect: (accountId: string) => void;
   onRetry: () => void;
 }) {
   if (status === "unconfigured") {
@@ -134,7 +149,7 @@ function GoogleSection({
     return (
       <p className="flex items-center gap-2 px-1 text-sm text-ink-faint">
         <span className="h-2 w-2 animate-pulse rounded-full bg-terracotta" />
-        Syncing your calendar…
+        Syncing your calendars…
       </p>
     );
   }
@@ -162,21 +177,49 @@ function GoogleSection({
     );
   }
 
-  // connected
+  // connected — one or more accounts
   return (
     <div>
-      <div className="mb-2 flex items-center justify-between">
-        <span className="flex items-center gap-1.5 text-xs text-ink-soft">
-          <GoogleGlyph />
-          {email ? `Synced · ${email}` : "Synced with Google"}
-        </span>
-        <button
-          onClick={onDisconnect}
-          className="text-xs text-ink-faint transition hover:text-terracotta-deep"
-        >
-          Disconnect
-        </button>
-      </div>
+      {/* Connected accounts, each with its color swatch + disconnect */}
+      <ul className="mb-3 space-y-1.5">
+        {accounts.map((a) => (
+          <li key={a.id} className="flex items-center gap-2 text-xs">
+            <span
+              className="h-2.5 w-2.5 shrink-0 rounded-full"
+              style={{ backgroundColor: a.color }}
+              aria-hidden
+            />
+            <span className="flex-1 truncate text-ink-soft">
+              {a.email ?? "Google account"}
+            </span>
+            {a.reauth && (
+              <a href="/api/google/connect" className="font-medium text-terracotta-deep underline">
+                Reconnect
+              </a>
+            )}
+            {a.error && !a.reauth && (
+              <span className="text-terracotta-deep">sync failed</span>
+            )}
+            <button
+              onClick={() => onDisconnect(a.id)}
+              className="text-ink-faint transition hover:text-terracotta-deep"
+            >
+              Disconnect
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {/* Connect another account */}
+      <a
+        href="/api/google/connect"
+        className="mb-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-line bg-white/40 py-2 text-xs font-medium text-ink-soft transition hover:border-terracotta hover:text-terracotta-deep"
+      >
+        <GoogleGlyph />
+        Connect another Google account
+      </a>
+
+      {/* Merged events from all accounts */}
       {events.length === 0 ? (
         <p className="px-1 py-2 text-sm text-ink-faint">
           No calendar events this week. ✦
@@ -187,14 +230,25 @@ function GoogleSection({
             const d = e.allDay ? fromISO(e.start) : new Date(e.start);
             return (
               <li
-                key={e.id}
-                className="flex items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-cream/60"
+                key={`${e.accountId}:${e.id}`}
+                className="flex items-center gap-3 rounded-lg border-l-2 px-2 py-2 transition-colors hover:bg-cream/60"
+                style={{ borderLeftColor: e.color }}
               >
                 <span className="w-10 shrink-0 text-xs font-medium text-terracotta-deep">
                   {d.toLocaleDateString("en-US", { weekday: "short" })}
                 </span>
-                <span className="flex-1 truncate text-sm text-ink">
-                  {e.summary}
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="truncate text-sm text-ink">{e.summary}</span>
+                  {e.accountEmail && (
+                    <span className="flex items-center gap-1 truncate text-[10px] text-ink-faint">
+                      <span
+                        className="inline-block h-1.5 w-1.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: e.color }}
+                        aria-hidden
+                      />
+                      {e.accountEmail}
+                    </span>
+                  )}
                 </span>
                 <span className="shrink-0 text-xs text-ink-faint">
                   {e.allDay

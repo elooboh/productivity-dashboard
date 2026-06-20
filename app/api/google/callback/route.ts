@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { exchangeCode, publicBaseUrl, redirectUriFor, saveTokens } from "@/lib/google";
+import { exchangeCode, publicBaseUrl, redirectUriFor, saveAccount } from "@/lib/google";
 
 export const dynamic = "force-dynamic";
 
@@ -21,8 +21,8 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const tokens = await exchangeCode(code, redirectUriFor(req));
-    await saveTokens(tokens);
+    const account = await exchangeCode(code, redirectUriFor(req));
+    await saveAccount(account);
     const res = back("connected");
     res.cookies.delete("g_oauth_state");
     return res;
